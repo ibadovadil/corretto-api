@@ -20,7 +20,31 @@ app.use('/', surface);
 
 //Admin routes start
 const adslider = require('./routers/admin/sliderRoute.js')
-app.use('/admin/slider',adslider)
+app.use('/admin/slider', adslider);
+
+const adHeroTitle = require('./routers/admin/heroTitleRoute.js');
+app.use('/admin/heroTitle', adHeroTitle)
+
+const adCounter = require('./routers/admin/counterRoute.js');
+app.use('/admin/counter', adCounter)
+
+const adPartner = require('./routers/admin/partnerRoute.js');
+app.use('/admin/partner', adPartner)
+
+const adGeneralSettings = require('./routers/admin/generaSettingsRoute.js')
+app.use('/admin/generalSettings', adGeneralSettings);
+
+const adGallery = require('./routers/admin/galleryRoute.js')
+app.use('/admin/gallery', adGallery);
+
+const adProduct = require('./routers/admin/productRoute.js')
+app.use('/admin/product', adProduct);
+
+const adCategory = require('./routers/admin/categoryRoute.js')
+app.use('/admin/category', adCategory);
+
+// const adUser = require('./routers/admin/userRoute.js')
+// app.use('/admin/user', adUser);
 //Admin routes end
 
 

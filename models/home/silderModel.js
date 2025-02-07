@@ -6,7 +6,14 @@ const sliderSchema = Schema({
         type: String,
         required: true
     },
+    titleAz:{
+        type:String,
+        required:true
+    },
     description: {
+        type: String,
+    },
+    descriptionAz: {
         type: String,
     },
     backgroundImage: {
@@ -26,7 +33,9 @@ const sliderSchema = Schema({
 const sliderValidator =(slider)=>{
     const schema = Joi.object({
         title: Joi.string().required(),
+        titleAz: Joi.string().required(),
         description: Joi.string().required(),
+        descriptionAz: Joi.string().required(),
         buttonUrl: Joi.string().required(),
     });
     return schema.validate(slider);
