@@ -39,7 +39,7 @@ exports.HeroTitleCreate = async (req, res) => {
                     result = await heroTitle.save();
                     return res.status(201).json(result);
                 } else {
-                    heroTitle.image = req.file.path;
+                    heroTitle.coverImage = req.file.path.replace(/\\/g, '/');;
                     const result = await heroTitle.save();
                     return res.status(201).json(result);
                 }
@@ -67,9 +67,9 @@ exports.HeroTitleUpdate = async (req, res) => {
                     res.status(200).send(result);
                 } else {
                     await HeroTitle.findByIdAndUpdate(Id, { ...req.body });
-                    const oldImage = heroTitle.image;
+                    const oldImage = heroTitle.coverImage;
                     deleteSingleOldImage(oldImage);
-                    heroTitle.image = req.file.path;
+                    heroTitle.coverImage = req.file.path.replace(/\\/g, '/');;
                     var result = await heroTitle.save();
                     res.status(200).send(result);
                 }
@@ -88,7 +88,7 @@ exports.HeroTitleDelete = async (req, res) => {
         if (!heroTitle) {
             return res.status(404).send({ message: "Hero title not found" });
         } else {
-            deleteSingleOldImage(heroTitle.image);
+            deleteSingleOldImage(heroTitle.coverImage);
             await HeroTitle.findByIdAndDelete(Id);
             res.status(200).send({ message: "Hero title deleted" });
         }

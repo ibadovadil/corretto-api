@@ -34,7 +34,7 @@ exports.SliderCreate = async (req, res) => {
                 result = await slider.save();
                 res.status(201).json(result)
             } else {
-                slider.backgroundImage = req.file.path;
+                slider.backgroundImage = req.file.path.replace(/\\/g, '/');
                 const result = await slider.save();
                 res.status(201).json(result);
             }
@@ -64,7 +64,7 @@ exports.SliderUpdate = async (req, res) => {
                     await Slider.findByIdAndUpdate(Id, { ...req.body });
                     const oldImage = slider.backgroundImage;
                     deleteSingleOldImage(oldImage);
-                    slider.backgroundImage = req.file.path;
+                    slider.backgroundImage = req.file.path.replace(/\\/g, '/');
                     var result = await slider.save();
                     res.status(200).send(result);
                 }

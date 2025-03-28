@@ -1,10 +1,13 @@
-const { Category } = require("../models/categoryModel.js");
-const { ProductValidator, Product } = require("../models/productModel.js");
-const { deleteSingleOldImage, deleteManyOldImages } = require("../utils/deleteOldImage.js");
+const { Category } = require("../../models/product/categoryModel.js");
+const { ProductValidator, Product } = require("../../models/product/productModel.js");
+const { Tag } = require("../../models/product/tagModel.js");
+const { deleteSingleOldImage, deleteManyOldImages } = require("../../utils/deleteOldImage.js");
 
 exports.productListItem = async (req, res) => {
     try {
-        const products = await Product.find().populate("category", "-__v -createdAt -updatedAt");
+        const products = await Product.find().populate("category", "-__v -createdAt -updatedAt")
+            .populate("tags", "-__v -createdAt -updatedAt");
+        ;
         res.json(products);
     }
     catch (err) {
@@ -46,30 +49,46 @@ exports.productListByPagination = async (req, res) => {
 exports.productCreate = async (req, res) => {
     try {
         const { error } = ProductValidator(req.body);
-        if (error) return res.status(400).json({ error: error.message });
+        if (error) {
+            res.status(400).json({ error: error.message });
+        }
         else {
             const isExistCategory = await Category.findById(req.body.category);
-            if (!isExistCategory) return res.status(400).json({ error: "Category not found" });
+            if (!isExistCategory) {
+                res.status(400).json({ error: "Category not found" })
+            }
+            const isExistTag = await Tag.findById(req.body.tags);
+            if (!isExistTag) {
+                res.status(400).json({ error: "Tag not found" })
+            }
+            else {
+                let product;
+                let result;
+                let filesObj = req.files;
+                let filesObjLength = Object.keys(filesObj).length;
 
-            let fileObj = req.files;
-            let filesObjLength = Object.keys(fileObj).length;
-            if (filesObjLength === 0) {
+                if (filesObjLength === 0) {
 
-                const product = new Product(req.body);
-                const result = await product.save();
-                res.status(201).send(result);
-            } else {
-                const product = new Product(req.body);
-                const uploadFiles = [];
-                req.files.images.map(async item => {
-                    uploadFiles.push(item.path)
-                })
-                product.images = uploadFiles;
-                product.coverImage = req.files.coverImage[0].path;
-                const result = await product.save();
-                res.status(201).send(result);
+                    product = new Product(req.body);
+                    result = await product.save();
+                    res.status(201).send(result);
+                } else {
+                    const product = new Product(req.body);
+                    const uploadFiles = [];
+
+                    req.files.images.forEach(item => {
+                        uploadFiles.push(item.path.replace(/\\/g, '/'));
+                    });
+
+
+                    product.images = uploadFiles;
+                    product.coverImage = req.files.coverImage[0].path.replace(/\\/g, '/');
+                    const result = await product.save();
+                    res.status(201).send(result);
+                }
             }
         }
+
     }
     catch (err) {
         res.status(500).json({ error: 'Error Occured', details: err.message });
@@ -135,4 +154,46 @@ exports.productDelete = async (req, res) => {
     }
 };
 
+exports.getProductsByTag = async (req, res) => {
+    try {
+        const tagId = req.params.tagId;
 
+        const tag = await Tag.findById(tagId);
+        if (!tag) {
+            return res.status(404).json({ error: "Tag not found" });
+        }
+        
+
+        const products = await Product.find({ tags: tagId })
+            .populate("category", "-__v -createdAt -updatedAt")
+            .populate("tags", "-__v -createdAt -updatedAt")
+            .exec();
+            if (products.length === 0) {
+                return res.status(404).json({ error: "No products found for this tag" });
+              }
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).json({ error: "Error occurred", details: err.message });
+    }
+};
+
+exports.getProductsByCategory = async (req, res) => {
+    try {
+        const catId = req.params.catId;
+        const category = await Category.findById(catId);
+        if (!category) {
+            return res.status(404).json({ error: "Category not found" });
+        }
+        const products = await Product.find({ category: catId })
+            .populate("category", "-__v -createdAt -updatedAt")
+            .populate("tags", "-__v -createdAt -updatedAt")
+            .exec();
+        if (products.length === 0) {
+            return res.status(404).json({ error: "No products found for this category" });
+        }
+        res.status(200).json(products);
+    }
+    catch (err) {
+        res.status(500).json({ error: "Error occurred", details: err.message });
+    }
+};

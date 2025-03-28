@@ -6,7 +6,7 @@ const heroTitleSchema = Schema({
     titleAz: { type: String, required: true },
     description: { type: String, required: true },
     descriptionAz: { type: String, required: true },
-    image: { type: String, required: true },
+    coverImage: { type: String, required: true },
 }, {timestamps: true});
 
 const heroTitleValidator = (hero)=>{

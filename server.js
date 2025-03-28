@@ -6,17 +6,30 @@ const connectDB = require('./config/connectdb.js');
 require('dotenv').config();
 
 //start middleware
-app.use(cors());
+
+
+app.use(cors(process.env.CORS_OPTIONS));
 app.use(express.json());
 //end middleware
 
+app.get('/', (req, res) => {
+    res.status(200).send('Ok');
+});
 
+
+
+// For uploads folder access in browser 
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+//
+
+const fixPaths = require('./middlewares/fixPaths.js');
+app.use(fixPaths);
 
 //Client routes start
 const surface = require('./routers/client/surface.js');
 app.use('/', surface);
 //Client routes end
-
 
 //Admin routes start
 const adslider = require('./routers/admin/sliderRoute.js')
@@ -43,8 +56,12 @@ app.use('/admin/product', adProduct);
 const adCategory = require('./routers/admin/categoryRoute.js')
 app.use('/admin/category', adCategory);
 
-// const adUser = require('./routers/admin/userRoute.js')
-// app.use('/admin/user', adUser);
+const adTag = require('./routers/admin/tagRoute.js')
+app.use('/admin/tag', adTag);
+
+const adBlog = require('./routers/admin/blogRoute.js')
+app.use('/admin/blog', adBlog);
+
 //Admin routes end
 
 

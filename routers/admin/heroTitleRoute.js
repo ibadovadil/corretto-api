@@ -4,8 +4,8 @@ const { HeroTitleCreate, HeroTitleDelete, HeroTitleUpdate } = require('../../con
 const router = express.Router();
 
 
-router.post('/',upload.single("image"),HeroTitleCreate)
-router.put('/:id',upload.single("image"),HeroTitleUpdate)
+router.post('/',upload.single("coverImage"),HeroTitleCreate)
+router.put('/:id',upload.single("coverImage"),HeroTitleUpdate)
 router.delete('/:id' , HeroTitleDelete)
 
 module.exports = router;

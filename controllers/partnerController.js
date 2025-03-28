@@ -33,7 +33,7 @@ exports.PartnerCreate = async (req, res) => {
                 result = await partner.save();
                 res.status(201).json(result)
             } else {
-                partner.image = req.file.path;
+                partner.image = req.file.path.replace(/\\/g, '/');;
                 const result = await partner.save();
                 res.status(201).json(result);
             }
@@ -63,7 +63,7 @@ exports.PartnerUpdate = async (req, res) => {
                     await Partner.findByIdAndUpdate(Id, { ...req.body });
                     const oldImage = partner.image;
                     deleteSingleOldImage(oldImage);
-                    partner.image = req.file.path;
+                    partner.image = req.file.path.replace(/\\/g, '/');
                     var result = await partner.save();
                     res.status(200).send(result);
                 }

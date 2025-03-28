@@ -22,7 +22,7 @@ exports.GalleryCreate = async (req, res) => {
                 result = await gallery.save();
                 res.status(201).json(result)
             } else {
-                gallery.image = req.file.path;
+                gallery.image = req.file.path.replace(/\\/g, '/');;
                 const result = await gallery.save();
                 res.status(201).json(result);
             }
@@ -52,7 +52,7 @@ exports.GalleryUpdate = async (req, res) => {
                     await Gallery.findByIdAndUpdate(Id, { ...req.body });
                     const oldImage = gallery.image;
                     deleteSingleOldImage(oldImage);
-                    gallery.image = req.file.path;
+                    gallery.image = req.file.path.replace(/\\/g, '/');;
                     var result = await gallery.save();
                     res.status(200).send(result);
                 }

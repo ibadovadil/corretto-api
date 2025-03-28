@@ -40,8 +40,7 @@ const productSchema = Schema({
         type: mongoose.Schema.Types.ObjectId, ref: 'Category'
     },
     tags: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId, ref: 'Tag'
     },
     coverImage: {
         type: String,
@@ -62,9 +61,13 @@ const productSchema = Schema({
         type: Boolean,
         default: false
     },
-    isHome:{
+    isHome: {
         type: Boolean,
         default: false
+    },
+    active: {
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true });
 
@@ -85,6 +88,7 @@ const ProductValidator = (Product) => {
         isSale: Joi.boolean(),
         isSoldOut: Joi.boolean(),
         isHome: Joi.boolean(),
+        active: Joi.boolean(),
     });
     return schema.validate(Product);
 };
