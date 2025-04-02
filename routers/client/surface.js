@@ -12,6 +12,7 @@ const { UserListItem, UserGetById, UserCreate, UserUpdate, UserDelete, userProfi
 const { TagGetById, TagListItem } = require('../../controllers/product/tagController.js');
 const { createBasket, getBasketByUserId, updateBasket, deleteBasket, deleteProductFromBasket } = require('../../controllers/product/basketController.js');
 const { BlogListItem, BlogGetById } = require('../../controllers/blogController.js');
+const { getWishlistByUser, createWishlist, addProductToWishlist, removeProductFromWishlist, deleteWishlist, createOrUpdateWishlist } = require('../../controllers/product/wishlistController.js');
 const router = express.Router();
 
 
@@ -70,5 +71,10 @@ router.put("/basketUpdate", auth, updateBasket);
 router.delete("/basket/:productId", auth, deleteProductFromBasket);
 router.delete("/basket", auth, deleteBasket);
 
+//Wishlist
+router.get("/wishlist", auth, getWishlistByUser);
+router.post("/wishlist", auth, createOrUpdateWishlist);
+router.post("/wishlist/remove", auth, removeProductFromWishlist);
+router.delete("/wishlist", auth, deleteWishlist);
 
 module.exports = router;
