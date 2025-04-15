@@ -54,10 +54,11 @@ exports.getBasketByUserId = async (req, res) => {
         });
 
         if (!basket) {
-            return res.status(404).json({ message: "Basket not found" });
+            return res.status(200).json([]);
         }
 
-        // Sepeti başarılı bir şekilde döndür
+        basket.products = basket.products.filter(p => p.product !== null);
+
         res.status(200).json(basket);
     } catch (err) {
         res.status(500).json({ message: "Failed to retrieve basket", error: err.message || "Internal server error" });
@@ -67,7 +68,7 @@ exports.getBasketByUserId = async (req, res) => {
 
 exports.updateBasket = async (req, res) => {
     try {
-        const { productId, quantity } = req.body;
+        const { productId, quantityChange } = req.body;
         const userId = req.user.id;
 
         const basket = await Basket.findOne({ userId });
@@ -79,10 +80,15 @@ exports.updateBasket = async (req, res) => {
         const productIndex = basket.products.findIndex(p => p.product.toString() === productId);
 
         if (productIndex === -1) {
-            basket.products.push({ product: productId, quantity });
-        } else {
-            basket.products[productIndex].quantity = quantity;
+            return res.status(404).json({ message: 'Product not found in basket' });
         }
+        const currentQuantity = basket.products[productIndex].quantity;
+        const newQuantity = currentQuantity + quantityChange;
+        if (newQuantity < 0) {
+            return res.status(400).json({ message: 'Quantity cannot be less than 0' });
+        }
+        basket.products[productIndex].quantity = newQuantity;
+        basket.totalPrice = await calculateTotalPrice(basket.products);
 
         await basket.save();
 
@@ -92,23 +98,23 @@ exports.updateBasket = async (req, res) => {
     }
 };
 
-exports.getBasket = async (req, res) => {
-    try {
-        const basket = await Basket.findOne({ userId: req.user.id }).populate('products.product');
-        if (!basket) {
-            return res.status(404).json({ message: 'Basket not found' });
-        }
+// exports.getBasket = async (req, res) => {
+    // try {
+    //     const basket = await Basket.findOne({ userId: req.user.id }).populate('products.product');
+    //     if (!basket) {
+    //         return res.status(404).json({ message: 'Basket not found' });
+    //     }
 
-        res.status(200).json(basket);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-};
+    //     res.status(200).json(basket);
+    // } catch (err) {
+    //     res.status(500).json({ message: err.message });
+    // }
+// };
 
 
 exports.deleteBasket = async (req, res) => {
     try {
-        const basket = await Basket.deleteMany({ userId: req.user.id });
+        const result = await Basket.deleteOne({ userId: req.user.id });
         if (basket.deletedCount === 0) {
             return res.status(404).json({ message: "Basket not found" });
         }

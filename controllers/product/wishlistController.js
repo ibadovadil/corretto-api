@@ -6,10 +6,10 @@ exports.getWishlistByUser = async (req, res) => {
     const wishlist = await Wishlist.findOne({ userId }).populate("products");
 
     if (!wishlist) {
-      return res.status(404).json({ message: "Wishlist not found." });
+      return res.json([]);
     }
 
-    res.json(wishlist);
+    res.status(200).json(wishlist);
   } catch (error) {
     res.status(500).json({ message: "Server error.", error: error.message });
   }
@@ -18,21 +18,21 @@ exports.getWishlistByUser = async (req, res) => {
 exports.createOrUpdateWishlist = async (req, res) => {
     try {
       const userId = req.user.id;   
-      const { productId } = req.body;
+      const { id } = req.params;
   
       let wishlist = await Wishlist.findOne({ userId });
   
       if (!wishlist) {
-        wishlist = new Wishlist({ userId, products: [productId] });
+        wishlist = new Wishlist({ userId, products: [id] });
         await wishlist.save();
         return res.status(201).json({ message: "Wishlist created and product added.", wishlist });
       }
   
-      if (wishlist.products.includes(productId)) {
+      if (wishlist.products.includes(id)) {
         return res.status(400).json({ message: "Product is already in the wishlist." });
       }
   
-      wishlist.products.push(productId);
+      wishlist.products.push(id);
       await wishlist.save();
   
       res.json({ message: "Product added to wishlist.", wishlist });
@@ -45,7 +45,7 @@ exports.createOrUpdateWishlist = async (req, res) => {
   exports.removeProductFromWishlist = async (req, res) => {
     try {
       const userId = req.user.id;  
-      const { productId } = req.body; 
+      const { id } = req.params; 
   
       const wishlist = await Wishlist.findOne({ userId });
       if (!wishlist) {
@@ -53,7 +53,7 @@ exports.createOrUpdateWishlist = async (req, res) => {
       }
   
       wishlist.products = wishlist.products.filter(
-        (product) => product.toString() !== productId
+        (product) => product.toString() !== id
       );
       await wishlist.save();
   

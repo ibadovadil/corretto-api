@@ -12,7 +12,6 @@ exports.SliderListItem = async (req, res) => {
 }
 
 exports.SliderGetById = async (req, res) => {
-    //? Cast error id=1
     try {
         const slider = await Slider.findById(req.params.id);
         if (!slider) return res.status(404).send('The slider with the given ID was not found.');

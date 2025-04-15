@@ -1,11 +1,11 @@
 const express = require('express');
 const upload = require('../../middlewares/uploadFile.js');
-const { GalleryListItem, GalleryCreate, GalleryUpdate, GalleryDelete } = require('../../controllers/galleryController.js');
+const { GalleryCreate, GalleryUpdate, GalleryDelete } = require('../../controllers/galleryController.js');
+const isAdmin = require('../../middlewares/isAdmin.js');
+const auth = require('../../middlewares/auth.js');
 const router = express.Router();
-
-router.get('/', GalleryListItem)
-router.post('/', upload.single('image'), GalleryCreate)
-router.put('/:id', upload.single('image'), GalleryUpdate)
-router.delete('/:id', upload.single('image'), GalleryDelete)
+router.post('/', auth, isAdmin, upload.single('image'), GalleryCreate);
+router.put('/:id', auth, isAdmin, upload.single('image'), GalleryUpdate);
+router.delete('/:id', auth, isAdmin, GalleryDelete);
 
 module.exports = router;

@@ -13,6 +13,7 @@ const { TagGetById, TagListItem } = require('../../controllers/product/tagContro
 const { createBasket, getBasketByUserId, updateBasket, deleteBasket, deleteProductFromBasket } = require('../../controllers/product/basketController.js');
 const { BlogListItem, BlogGetById } = require('../../controllers/blogController.js');
 const { getWishlistByUser, createWishlist, addProductToWishlist, removeProductFromWishlist, deleteWishlist, createOrUpdateWishlist } = require('../../controllers/product/wishlistController.js');
+const { GalleryListItem } = require('../../controllers/galleryController.js');
 const router = express.Router();
 
 
@@ -60,6 +61,10 @@ router.post('/user', UserCreate)
 router.put('/user/:id', auth, UserUpdate)
 router.delete('/user/:id', auth, UserDelete)
 
+//Gallery
+router.get('/gallery', GalleryListItem)
+
+
 //Auth
 router.post('/signin', userAuth)
 
@@ -67,14 +72,14 @@ router.post('/signin', userAuth)
 //Basket
 router.get("/basket", auth, getBasketByUserId);
 router.post("/basket", auth, createBasket);
-router.put("/basketUpdate", auth, updateBasket);
+router.post("/basket/update", auth, updateBasket);
 router.delete("/basket/:productId", auth, deleteProductFromBasket);
 router.delete("/basket", auth, deleteBasket);
 
 //Wishlist
 router.get("/wishlist", auth, getWishlistByUser);
-router.post("/wishlist", auth, createOrUpdateWishlist);
-router.post("/wishlist/remove", auth, removeProductFromWishlist);
+router.post("/wishlist/:id", auth, createOrUpdateWishlist);
+router.delete("/wishlist/:id", auth, removeProductFromWishlist);
 router.delete("/wishlist", auth, deleteWishlist);
 
 module.exports = router;
